@@ -99,3 +99,46 @@ func DownloadHandler(w http.ResponseWriter, r *http.Request){
 	w.Write(data)
 
 }
+
+//更新元信息（重命名）接口
+func FileMetaUpdateHandler(w http.ResponseWriter, r *http.Request){
+	r.ParseForm()
+
+	opType := r.Form.Get("op")
+	fileSha1 := r.Form.Get("filehash")
+	newFileName := r.Form.Get("fileName")
+
+	if opType != "0"{
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+	if r.Method != "POST"{
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	curFileMeta := meta.GetFileMeta(fileSha1)
+	curFileMeta.FileName = newFileName
+	meta.UploadFileMeta(curFileMeta)
+
+	data, err := json.Marshal(curFileMeta)
+	if err != nil{
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(data)
+}
+
+//删除上传的文件以及元信息
+func FileDeleteHandler(w http.ResponseWriter, r *http.Request){
+	r.ParseForm()
+	fileSha1 := r.Form.Get("filehash")
+
+	fMeta := meta.GetFileMeta(fileSha1)
+	os.Remove(fMeta.Location)
+
+	meta.RemoveFileMeta(fileSha1)
+
+	w.WriteHeader(http.StatusOK)
+}
