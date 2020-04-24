@@ -1,5 +1,7 @@
 package meta
 
+import mydb "Distributed-fileserver/db"
+
 type FileMeta struct {
 	FileSha1 string
 	FileName string
@@ -17,6 +19,12 @@ func init(){
 //新增/更新文件元信息
 func UploadFileMeta(fmeta FileMeta){
 	fileMetas[fmeta.FileSha1] = fmeta
+}
+
+// 新增与更新元信息到数据库
+func UpdateFileMetaDB(fmeta FileMeta) bool {
+	return mydb.OnFileUploadFinished(
+		fmeta.FileSha1, fmeta.FileName, fmeta.FileSize, fmeta.Location)
 }
 
 //通过sha1获取文件元信息
