@@ -15,6 +15,7 @@ func main() {
 	http.HandleFunc("/file/update", handler.FileMetaUpdateHandler)
 
 	http.HandleFunc("/user/signup", handler.SignupHandler)
+	http.HandleFunc("/user/signin", handler.SignInHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil{
