@@ -97,12 +97,26 @@ func UserInfoHandler(w http.ResponseWriter, r *http.Request){
 	username := r.Form.Get("username")
 	token := r.Form.Get("token")
 
+	//验证token有效性
 	valid := IsTokenValid(token)
 	if !valid{
 		w.WriteHeader(http.StatusForbidden)
 		return
 	}
+	//查询用户信息
+	user, err := dblayer.GetUserInfo(username)
+	if err != nil{
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
 
+	//组装并相应用户数据
+	resp := util.RespMsg{
+		Code:0,
+		Msg:"OK",
+		Data:user,
+	}
+	w.Write(resp.JSONBytes())
 
 }
 
