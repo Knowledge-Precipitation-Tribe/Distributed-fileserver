@@ -95,14 +95,14 @@ func GenToken(username string) string{
 func UserInfoHandler(w http.ResponseWriter, r *http.Request){
 	r.ParseForm()
 	username := r.Form.Get("username")
-	token := r.Form.Get("token")
+	//token := r.Form.Get("token")
 
-	//验证token有效性
-	valid := IsTokenValid(token)
-	if !valid{
-		w.WriteHeader(http.StatusForbidden)
-		return
-	}
+	//验证token有效性,使用拦截器实现
+	//valid := IsTokenValid(token)
+	//if !valid{
+	//	w.WriteHeader(http.StatusForbidden)
+	//	return
+	//}
 	//查询用户信息
 	user, err := dblayer.GetUserInfo(username)
 	if err != nil{
@@ -122,6 +122,9 @@ func UserInfoHandler(w http.ResponseWriter, r *http.Request){
 
 //验证token有效性
 func IsTokenValid(token string) bool {
+	if len(token) < 40{
+		return false
+	}
 	//判断token是否过期
 	return true
 }
