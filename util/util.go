@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"reflect"
 )
 
 type Sha1Stream struct {
@@ -68,3 +69,28 @@ func GetFileSize(filename string) int64 {
 	})
 	return result
 }
+
+//判断接口是否为空
+func IsNil(i interface{}) bool {
+	if i == nil {
+		return true
+	}
+	switch reflect.TypeOf(i).Kind() {
+	case reflect.Ptr, reflect.Map, reflect.Array, reflect.Chan, reflect.Slice:
+		return reflect.ValueOf(i).IsNil()
+	}
+	return false
+}
+
+//对应一个多接口的项目，具体判断
+//func isNilBetter(i Animal) bool {
+//	var ret bool
+//	switch i.(type) {
+//	case *Dog:
+//		v := i.(*Dog)
+//		ret = v == nil
+//	case Cat:
+//		ret = false
+//	}
+//	return ret
+//}

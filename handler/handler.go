@@ -180,3 +180,33 @@ func FileQueryHandler(w http.ResponseWriter, r *http.Request){
 	}
 	w.Write(data)
 }
+
+func TyrFastUploadHandler(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+
+	//解析请求参数
+	username := r.Form.Get("username")
+	filehash := r.Form.Get("filehash")
+	filename := r.Form.Get("filename")
+	filesize := r.Form.Get("filesize")
+
+	//从文件表中查询相同的hash文件记录
+	fileMeta, err := meta.GetFileMetaDB(filehash)
+	if err != nil{
+		fmt.Println(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	//查不到记录则返回秒传失败
+	if util.IsNil(fileMeta) {
+		resp := util.RespMsg{
+			Code : -1,
+			Msg: "秒传失败，请访问普通上传接口",
+		}
+		w.Write(resp.JSONBytes())
+		return
+	}
+
+	//上传过则将文件写入用户文件表，返回成功
+}

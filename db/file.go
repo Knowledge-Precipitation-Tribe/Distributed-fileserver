@@ -55,7 +55,7 @@ func GetFileMeta(filehash string) (*TableFile, error) {
 		&tfile.FileHash, &tfile.FileAddr, &tfile.FileName, &tfile.FileSize)
 	if err != nil{
 		fmt.Println(err.Error())
-		return nil, err
+		return nil, nil
 	}
 	return &tfile, nil
 }
