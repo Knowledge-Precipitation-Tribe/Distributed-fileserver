@@ -188,7 +188,7 @@ func TyrFastUploadHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.Form.Get("username")
 	filehash := r.Form.Get("filehash")
 	filename := r.Form.Get("filename")
-	filesize := r.Form.Get("filesize")
+	filesize, _ := strconv.Atoi(r.Form.Get("filesize"))
 
 	//从文件表中查询相同的hash文件记录
 	fileMeta, err := meta.GetFileMetaDB(filehash)
@@ -209,4 +209,20 @@ func TyrFastUploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//上传过则将文件写入用户文件表，返回成功
+	finished := dblayer.OnUserFileUploadFinished(username, filehash, filename, int64(filesize))
+	if finished{
+		resp := util.RespMsg{
+			Code:0,
+			Msg:"秒传成功",
+		}
+		w.Write(resp.JSONBytes())
+		return
+	}else{
+		resp := util.RespMsg{
+			Code:-2,
+			Msg:"秒传失败，请稍后重试",
+		}
+		w.Write(resp.JSONBytes())
+		return
+	}
 }

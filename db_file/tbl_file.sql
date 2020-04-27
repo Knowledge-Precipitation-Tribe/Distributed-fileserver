@@ -57,3 +57,5 @@ CREATE TABLE `tbl_user_file` (
   KEY `idx_status` (`status`),
   KEY `idx_user_id` (`user_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE tbl_user_file drop index `idx_user_file`;
