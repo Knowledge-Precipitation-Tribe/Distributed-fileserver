@@ -37,23 +37,24 @@ func UserSignin(username string, encpwd string) bool{
 		fmt.Println(err.Error())
 		return false
 	}
-	//result, err := stmt.Exec(username)
-	var pwd string
-	err = stmt.QueryRow(username).Scan(&pwd)
-	if err != nil{
-		fmt.Println(err.Error())
-		return false
-	}else if pwd == ""{
-		fmt.Println("username not found", username)
-		return false
-	}else if len(pwd) > 0 && pwd == encpwd{
-		return true
-	}
+	result, err := stmt.Exec(username)
 
-	//pRows := mydb.ParseRows(result)
-	//if len(pRows) > 0 && string(pRows[0]["user_pwd"].([]byte)) == encpwd{
+	//var pwd string
+	//err = stmt.QueryRow(username).Scan(&pwd)
+	//if err != nil{
+	//	fmt.Println(err.Error())
+	//	return false
+	//}else if pwd == ""{
+	//	fmt.Println("username not found", username)
+	//	return false
+	//}else if len(pwd) > 0 && pwd == encpwd{
 	//	return true
 	//}
+
+	pRows := mydb.ParseRows(result)
+	if len(pRows) > 0 && string(pRows[0]["user_pwd"].([]byte)) == encpwd{
+		return true
+	}
 	return false
 }
 
