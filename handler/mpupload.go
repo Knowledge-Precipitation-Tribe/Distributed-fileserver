@@ -139,6 +139,7 @@ func CancelUploadPartHandler(w http.ResponseWriter, r *http.Request){
 	//3 更新mysql文件status
 }
 
+//查看分块上传状态，例如显示50%
 func MultipartUploadStatusHandler(w http.ResponseWriter, r *http.Request){
 	//1 检查分块上传状态是否有效
 	//2 获取分块初始化信息
