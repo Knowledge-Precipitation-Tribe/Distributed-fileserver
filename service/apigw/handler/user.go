@@ -6,7 +6,9 @@ import (
 	"net/http"
 
 	// 加入k8s作为registry center
+	_ "github.com/micro/go-plugins/registry/consul"
 	_ "github.com/micro/go-plugins/registry/kubernetes"
+
 
 	"github.com/gin-gonic/gin"
 	ratelimit2 "github.com/juju/ratelimit"

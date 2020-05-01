@@ -13,6 +13,7 @@ import (
 
 	"github.com/micro/cli"
 	micro "github.com/micro/go-micro"
+	_ "github.com/micro/go-plugins/registry/consul"
 	_ "github.com/micro/go-plugins/registry/kubernetes"
 )
 
@@ -48,10 +49,10 @@ func startTranserService() {
 		return
 	}
 	log.Println("文件转移服务启动中，开始监听转移任务队列...")
-  
-  	// 初始化mq client
+
+	// 初始化mq client
 	mq.Init()
-  
+
 	mq.StartConsume(
 		config.TransOSSQueueName,
 		"transfer_oss",

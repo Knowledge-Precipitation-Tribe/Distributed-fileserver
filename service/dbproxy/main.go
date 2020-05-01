@@ -1,18 +1,19 @@
 package main
 
 import (
-	"filestore-server/common"
-	"filestore-server/service/dbproxy/config"
+	"Distributed-fileserver/common"
+	"Distributed-fileserver/service/dbproxy/config"
 	"log"
 	"time"
 
 	"github.com/micro/cli"
 	"github.com/micro/go-micro"
+	_ "github.com/micro/go-plugins/registry/consul"
 	_ "github.com/micro/go-plugins/registry/kubernetes"
 
-	dbConn "filestore-server/service/dbproxy/conn"
-	dbProxy "filestore-server/service/dbproxy/proto"
-	dbRpc "filestore-server/service/dbproxy/rpc"
+	dbConn "Distributed-fileserver/service/dbproxy/conn"
+	dbProxy "Distributed-fileserver/service/dbproxy/proto"
+	dbRpc "Distributed-fileserver/service/dbproxy/rpc"
 )
 
 func startRpcService() {

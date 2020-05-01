@@ -28,11 +28,11 @@ run_service() {
 }
 
 # 创建运行日志目录
-logpath=/data/log/filestore-server
+logpath=/data/log/Distributed-fileserver
 mkdir -p $logpath
 
 # 切换到工程根目录
-cd $GOPATH/filestore-server
+cd $GOPATH/Distributed-fileserver
 #cd /data/go/work/src/filestore-server
 
 # 微服务可以用supervisor做进程管理工具；

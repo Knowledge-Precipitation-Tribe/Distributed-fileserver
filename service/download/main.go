@@ -6,6 +6,7 @@ import (
 
 	micro "github.com/micro/go-micro"
 	_ "github.com/micro/go-plugins/registry/kubernetes"
+	_ "github.com/micro/go-plugins/registry/consul"
 
 	"Distributed-fileserver/common"
 	dbproxy "Distributed-fileserver/service/dbproxy/client"

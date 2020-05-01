@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/micro/go-micro"
+	_ "github.com/micro/go-plugins/registry/consul"
 	_ "github.com/micro/go-plugins/registry/kubernetes"
 
 	// k8s "github.com/micro/kubernetes/go/micro"

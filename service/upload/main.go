@@ -10,6 +10,7 @@ import (
 
 	"github.com/micro/cli"
 	micro "github.com/micro/go-micro"
+	_ "github.com/micro/go-plugins/registry/consul"
 	_ "github.com/micro/go-plugins/registry/kubernetes"
 
 	"Distributed-fileserver/common"
