@@ -7,30 +7,27 @@ import (
 	"go.uber.org/zap"
 )
 
-var conn *amqp.Connection
-var channel *amqp.Channel
-
-//初始化channel
-func initChannel() bool{
-	if channel != nil{
-		return true
-	}
-	//获得rabbitmq的连接
-	conn, err := amqp.Dial(config.RabbitURL)
-	if err != nil{
-		log.GetLogger().Error(
-			"error initChannel get rabbitmq conn",
-			zap.Error(err))
+//发布消息
+func Publish(exchange string, routingKey string, msg []byte) bool {
+	//检查channel是否正常
+	if !initChannel(config.RabbitURL) {
 		return false
 	}
-	//打开一个channel，用于消息发布与接收
-	channel, err = conn.Channel()
-	if err != nil{
+	//执行消息发布
+	err := channel.Publish(
+		exchange,
+		routingKey,
+		false,
+		false,
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        msg,
+		})
+	if err != nil {
 		log.GetLogger().Error(
-			"error initChannel get channel",
+			"error mq Publish",
 			zap.Error(err))
 		return false
 	}
 	return true
 }
-

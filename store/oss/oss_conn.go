@@ -1,6 +1,6 @@
 package oss
 
-import(
+import (
 	cfg "Distributed-fileserver/config"
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
@@ -8,27 +8,26 @@ import(
 
 var ossCli *oss.Client
 
-//创建oss Client对象
-func Client() *oss.Client{
-	if ossCli != nil{
+// Client : 创建oss client对象
+func Client() *oss.Client {
+	if ossCli != nil {
 		return ossCli
 	}
 	ossCli, err := oss.New(cfg.OSSEndpoint,
 		cfg.OSSAccesskeyID, cfg.OSSAccessKeySecret)
-	if err != nil{
+	if err != nil {
 		fmt.Println(err.Error())
 		return nil
 	}
 	return ossCli
 }
 
-
-//获取bucket存储空间
-func Bucket() *oss.Bucket{
+// Bucket : 获取bucket存储空间
+func Bucket() *oss.Bucket {
 	cli := Client()
-	if cli != nil{
+	if cli != nil {
 		bucket, err := cli.Bucket(cfg.OSSBucket)
-		if err != nil{
+		if err != nil {
 			fmt.Println(err.Error())
 			return nil
 		}
@@ -37,20 +36,30 @@ func Bucket() *oss.Bucket{
 	return nil
 }
 
-//DownloadURL: 临时授权下载url
-func DownloadURL(objName string) string{
-	signURL, err := Bucket().SignURL(objName, oss.HTTPGet, 3600)
-	if err != nil{
+// DownloadURL : 临时授权下载url
+func DownloadURL(objName string) string {
+	signedURL, err := Bucket().SignURL(objName, oss.HTTPGet, 3600)
+	if err != nil {
 		fmt.Println(err.Error())
 		return ""
 	}
-	return signURL
+	return signedURL
 }
 
-//设置生命周期规则
-func BuildLifecycleRule(bucketName string){
-	//制定bucket中以test开头的对象，30天内没有修改则自动删除
+// BuildLifecycleRule : 针对指定bucket设置生命周期规则
+func BuildLifecycleRule(bucketName string) {
+	// 表示前缀为test的对象(文件)距最后修改时间30天后过期。
 	ruleTest1 := oss.BuildLifecycleRuleByDays("rule1", "test/", true, 30)
 	rules := []oss.LifecycleRule{ruleTest1}
+
 	Client().SetBucketLifecycle(bucketName, rules)
+}
+
+// GenFileMeta :  构造文件元信息
+func GenFileMeta(metas map[string]string) []oss.Option {
+	options := []oss.Option{}
+	for k, v := range metas {
+		options = append(options, oss.Meta(k, v))
+	}
+	return options
 }

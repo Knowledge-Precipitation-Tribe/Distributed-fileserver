@@ -59,3 +59,7 @@ func GetFileMeta(filehash string) (*TableFile, error) {
 	}
 	return &tfile, nil
 }
+
+func UpdateFileLocation(filehash string, fileaddr string) bool {
+
+}
