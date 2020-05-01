@@ -246,3 +246,16 @@ func TyrFastUploadHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+//生成文件的下载地址
+func DownloadURLHandler(w http.ResponseWriter, r *http.Request){
+	r.ParseForm()
+	filehash := r.Form.Get("filehash")
+
+	row, _ := dblayer.GetFileMeta(filehash)
+
+	//TODO 判断文件存储在oss还是ceph
+
+	url := oss.DownloadURL(row.FileAddr.String)
+	w.Write([]byte(url))
+}
