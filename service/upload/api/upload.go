@@ -12,14 +12,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	cmn "filestore-server/common"
-	cfg "filestore-server/config"
-	"filestore-server/mq"
-	dbcli "filestore-server/service/dbproxy/client"
-	"filestore-server/service/dbproxy/orm"
-	"filestore-server/store/ceph"
-	"filestore-server/store/oss"
-	"filestore-server/util"
+	cmn "Distributed-fileserver/common"
+	cfg "Distributed-fileserver/config"
+	"Distributed-fileserver/mq"
+	dbcli "Distributed-fileserver/service/dbproxy/client"
+	"Distributed-fileserver/service/dbproxy/orm"
+	"Distributed-fileserver/store/ceph"
+	"Distributed-fileserver/store/oss"
+	"Distributed-fileserver/util"
 )
 
 // DoUploadHandler ： 处理文件上传

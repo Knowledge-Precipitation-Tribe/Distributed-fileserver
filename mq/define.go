@@ -6,5 +6,5 @@ type TransferData struct{
 	FileHash string
 	CurLocation string
 	DestLocation string
-	DestStoretype common.StoreType
+	DestStoreType common.StoreType
 }
