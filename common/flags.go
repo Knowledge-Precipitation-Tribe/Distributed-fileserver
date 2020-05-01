@@ -6,7 +6,7 @@ import "github.com/micro/cli"
 var CustomFlags = []cli.Flag{
 	cli.StringFlag{
 		Name:  "dbhost",
-		Value: "127.0.0.1",
+		Value: "139.9.131.190",
 		Usage: "database address",
 	},
 	cli.StringFlag{
@@ -16,7 +16,7 @@ var CustomFlags = []cli.Flag{
 	},
 	cli.StringFlag{
 		Name:  "cachehost",
-		Value: "127.0.0.1",
+		Value: "139.9.131.190",
 		Usage: "cache(redis) address",
 	},
 	cli.StringFlag{

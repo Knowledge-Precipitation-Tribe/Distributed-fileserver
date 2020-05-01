@@ -58,6 +58,7 @@ func Router() *gin.Engine {
 	router.GET("/user/signin", handler.SigninHandler)
 	router.POST("/user/signin", handler.DoSigninHandler)
 
+	//加入之后后面的所有路由都需要拦截器校验
 	router.Use(handler.Authorize())
 
 	// 用户查询

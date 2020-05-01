@@ -8,7 +8,7 @@ import (
 var done chan bool
 
 //开始监听队列，获取消息
-func StratConsume(qName string, cName string, callback func(msg []byte) bool) {
+func StartConsume(qName string, cName string, callback func(msg []byte) bool) {
 	msgs, err := channel.Consume(
 		qName,
 		cName,
