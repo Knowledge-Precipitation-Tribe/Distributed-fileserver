@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"Distributed-fileserver/config"
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"time"
@@ -8,7 +9,7 @@ import (
 
 var (
 	pool *redis.Pool
-	redisHost = "139.9.131.190:6379"
+	redisHost = config.RedisHost
 )
 
 //创建redis连接池

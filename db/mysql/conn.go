@@ -1,6 +1,7 @@
 package db
 
 import(
+	"Distributed-fileserver/config"
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
@@ -10,7 +11,8 @@ import(
 var db *sql.DB
 
 func init()  {
-	db, _ = sql.Open("mysql", "root:password@tcp(139.9.131.190:3306)/fileserver?charset=utf8")
+	datasource := config.MySQLUser + ":" + config.MySQLPassword + "@tcp(" + config.MySQLHost + ")/" + config.DBName + "?charset="  + config.DBCharset
+	db, _ = sql.Open("mysql", datasource)
 	db.SetMaxOpenConns(1000)
 	err := db.Ping()
 	if err != nil{
