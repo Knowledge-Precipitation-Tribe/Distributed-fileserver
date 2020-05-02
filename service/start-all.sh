@@ -29,11 +29,15 @@ run_service() {
 
 # 创建运行日志目录
 logpath=/data/log/Distributed-fileserver
-mkdir -p $logpath
+#mkdir -p $logpath
+mkdir -p /data/log/Distributed-fileserver
+
 
 # 切换到工程根目录
 cd $GOPATH/Distributed-fileserver
 #cd /data/go/work/src/filestore-server
+
+rm -rf /data/logfile
 
 # 微服务可以用supervisor做进程管理工具；
 # 或者也可以通过docker/k8s进行部署

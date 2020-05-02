@@ -1,7 +1,8 @@
 package main
 
 import (
-	"fmt"
+	"Distributed-fileserver/service/transfer/customLog"
+	"go.uber.org/zap"
 	"log"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 	"Distributed-fileserver/service/transfer/process"
 
 	"github.com/micro/cli"
-	micro "github.com/micro/go-micro"
+	"github.com/micro/go-micro"
 	_ "github.com/micro/go-plugins/registry/consul"
 	_ "github.com/micro/go-plugins/registry/kubernetes"
 )
@@ -39,7 +40,7 @@ func startRPCService() {
 	dbproxy.Init(service)
 
 	if err := service.Run(); err != nil {
-		fmt.Println(err)
+		customLog.Logger.Error("transfer main service run 失败", zap.Error(err))
 	}
 }
 

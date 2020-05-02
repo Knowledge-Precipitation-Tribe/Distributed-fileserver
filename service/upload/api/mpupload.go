@@ -1,7 +1,9 @@
 package api
 
 import (
+	"Distributed-fileserver/service/upload/customLog"
 	"fmt"
+	"go.uber.org/zap"
 	"log"
 	"math"
 	"net/http"
@@ -41,6 +43,7 @@ func InitialMultipartUploadHandler(c *gin.Context) {
 	filehash := c.Request.FormValue("filehash")
 	filesize, err := strconv.Atoi(c.Request.FormValue("filesize"))
 	if err != nil {
+		customLog.Logger.Error("分块上传解析用户请求参数失败", zap.Error(err))
 		c.JSON(
 			http.StatusOK,
 			gin.H{
@@ -94,6 +97,7 @@ func UploadPartHandler(c *gin.Context) {
 	os.MkdirAll(path.Dir(fpath), 0744)
 	fd, err := os.Create(fpath)
 	if err != nil {
+		customLog.Logger.Error("上传分块文件失败", zap.Error(err))
 		c.JSON(
 			http.StatusOK,
 			gin.H{
@@ -143,6 +147,7 @@ func CompleteUploadHandler(c *gin.Context) {
 	// 3. 通过uploadid查询redis并判断是否所有分块上传完成
 	data, err := redis.Values(rConn.Do("HGETALL", "MP_"+upid))
 	if err != nil {
+		customLog.Logger.Error("通知上传合并失败", zap.Error(err))
 		c.JSON(
 			http.StatusOK,
 			gin.H{
@@ -181,7 +186,7 @@ func CompleteUploadHandler(c *gin.Context) {
 	cmd := fmt.Sprintf("cd %s && ls | sort -n | xargs cat > %s", srcPath, destPath)
 	mergeRes, err := util.ExecLinuxShell(cmd)
 	if err != nil {
-		log.Println(err)
+		customLog.Logger.Error("分块合并写入oss shell执行失败", zap.Error(err))
 		c.JSON(
 			http.StatusOK,
 			gin.H{

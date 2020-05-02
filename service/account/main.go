@@ -1,7 +1,8 @@
 package main
 
 import (
-	"log"
+	"Distributed-fileserver/service/account/customLog"
+	"go.uber.org/zap"
 	"time"
 
 	"github.com/micro/go-micro"
@@ -33,6 +34,6 @@ func main() {
 
 	proto.RegisterUserServiceHandler(service.Server(), new(handler.User))
 	if err := service.Run(); err != nil {
-		log.Println(err)
+		customLog.Logger.Error("account main service run失败", zap.Error(err))
 	}
 }

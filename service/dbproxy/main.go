@@ -3,6 +3,9 @@ package main
 import (
 	"Distributed-fileserver/common"
 	"Distributed-fileserver/service/dbproxy/config"
+	"Distributed-fileserver/service/dbproxy/customLog"
+	"fmt"
+	"go.uber.org/zap"
 	"log"
 	"time"
 
@@ -30,6 +33,7 @@ func startRpcService() {
 			dbhost := c.String("dbhost")
 			if len(dbhost) > 0 {
 				log.Println("custom db address: " + dbhost)
+				customLog.Logger.Info("db address", zap.String("db address", fmt.Sprintf("custom db address: " + dbhost)))
 				config.UpdateDBHost(dbhost)
 			}
 		}),
@@ -40,7 +44,7 @@ func startRpcService() {
 
 	dbProxy.RegisterDBProxyServiceHandler(service.Server(), new(dbRpc.DBProxy))
 	if err := service.Run(); err != nil {
-		log.Println(err)
+		customLog.Logger.Error("dbproxy main service run失败", zap.Error(err))
 	}
 }
 

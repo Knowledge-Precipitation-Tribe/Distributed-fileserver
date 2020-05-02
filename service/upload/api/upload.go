@@ -1,8 +1,11 @@
 package api
 
 import (
+	"Distributed-fileserver/service/upload/customLog"
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
 	"log"
@@ -44,7 +47,7 @@ func DoUploadHandler(c *gin.Context) {
 	// 1. 从form表单中获得文件内容句柄
 	file, head, err := c.Request.FormFile("file")
 	if err != nil {
-		log.Printf("Failed to get form data, err:%s\n", err.Error())
+		customLog.Logger.Error("文件上传从form表单获取文件句柄失败", zap.Error(err))
 		errCode = -1
 		return
 	}
@@ -53,7 +56,7 @@ func DoUploadHandler(c *gin.Context) {
 	// 2. 把文件内容转为[]byte
 	buf := bytes.NewBuffer(nil)
 	if _, err := io.Copy(buf, file); err != nil {
-		log.Printf("Failed to get file data, err:%s\n", err.Error())
+		customLog.Logger.Error("文件上传把文件内容转为[]byte失败", zap.Error(err))
 		errCode = -2
 		return
 	}
@@ -70,7 +73,7 @@ func DoUploadHandler(c *gin.Context) {
 	fileMeta.Location = cfg.TempLocalRootDir + fileMeta.FileSha1 // 临时存储地址
 	newFile, err := os.Create(fileMeta.Location)
 	if err != nil {
-		log.Printf("Failed to create file, err:%s\n", err.Error())
+		customLog.Logger.Error("文件上传将文件写入临时存储位置失败", zap.Error(err))
 		errCode = -3
 		return
 	}
@@ -79,12 +82,18 @@ func DoUploadHandler(c *gin.Context) {
 	nByte, err := newFile.Write(buf.Bytes())
 	if int64(nByte) != fileMeta.FileSize || err != nil {
 		log.Printf("Failed to save data into file, writtenSize:%d, err:%s\n", nByte, err.Error())
+		customLog.Logger.Error("文件上传将文件写入临时存储位置失败", zap.Error(err))
 		errCode = -4
 		return
 	}
 
 	// 5. 同步或异步将文件转移到Ceph/OSS
-	newFile.Seek(0, 0) // 游标重新回到文件头部
+	res, err := newFile.Seek(0, 0) // 游标重新回到文件头部
+	if err != nil{
+		customLog.Logger.Error("文件上传从form表单获取文件句柄失败",
+			zap.Error(err),
+			zap.String("res", fmt.Sprintf("%d", res)))
+	}
 	if cfg.CurrentStoreType == cmn.StoreCeph {
 		// 文件写入Ceph存储
 		data, _ := ioutil.ReadAll(newFile)
@@ -99,7 +108,7 @@ func DoUploadHandler(c *gin.Context) {
 			// TODO: 设置oss中的文件名，方便指定文件名下载
 			err = oss.Bucket().PutObject(ossPath, newFile)
 			if err != nil {
-				log.Println(err.Error())
+				customLog.Logger.Error("文件上传oss.bucket.putobject失败", zap.Error(err))
 				errCode = -5
 				return
 			}
@@ -120,6 +129,7 @@ func DoUploadHandler(c *gin.Context) {
 			)
 			if !pubSuc {
 				// TODO: 当前发送转移信息失败，稍后重试
+				customLog.Logger.Error("当前发送转移信息失败，稍后重试")
 			}
 		}
 	}
@@ -127,6 +137,7 @@ func DoUploadHandler(c *gin.Context) {
 	//6.  更新文件表记录
 	_, err = dbcli.OnFileUploadFinished(fileMeta)
 	if err != nil {
+		customLog.Logger.Error("文件上传更新文件表记录失败", zap.Error(err))
 		errCode = -6
 		return
 	}
@@ -135,8 +146,10 @@ func DoUploadHandler(c *gin.Context) {
 	username := c.Request.FormValue("username")
 	upRes, err := dbcli.OnUserFileUploadFinished(username, fileMeta)
 	if err == nil && upRes.Suc {
+		customLog.Logger.Info("文件更新用户文件表成功")
 		errCode = 0
 	} else {
+		customLog.Logger.Error("文件更新用户文件表失败", zap.Error(err))
 		errCode = -6
 	}
 }
@@ -153,7 +166,7 @@ func TryFastUploadHandler(c *gin.Context) {
 	// 2. 从文件表中查询相同hash的文件记录
 	fileMetaResp, err := dbcli.GetFileMeta(filehash)
 	if err != nil {
-		log.Println(err.Error())
+		customLog.Logger.Error("文件更新用户文件表失败", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
@@ -180,6 +193,7 @@ func TryFastUploadHandler(c *gin.Context) {
 		c.Data(http.StatusOK, "application/json", resp.JSONBytes())
 		return
 	}
+	customLog.Logger.Error("文件秒传失败", zap.Error(err))
 	resp := util.RespMsg{
 		Code: -2,
 		Msg:  "秒传失败，请稍后重试",

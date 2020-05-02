@@ -1,18 +1,18 @@
 package handler
 
 import (
+	"Distributed-fileserver/service/apigw/customLog"
 	"context"
-	"log"
+	"go.uber.org/zap"
 	"net/http"
 
 	// 加入k8s作为registry center
 	_ "github.com/micro/go-plugins/registry/consul"
 	_ "github.com/micro/go-plugins/registry/kubernetes"
 
-
 	"github.com/gin-gonic/gin"
 	ratelimit2 "github.com/juju/ratelimit"
-	micro "github.com/micro/go-micro"
+	"github.com/micro/go-micro"
 
 	"github.com/micro/go-plugins/wrapper/breaker/hystrix"
 	"github.com/micro/go-plugins/wrapper/ratelimiter/ratelimit"
@@ -76,7 +76,7 @@ func DoSignupHandler(c *gin.Context) {
 	})
 
 	if err != nil {
-		log.Println(err.Error())
+		customLog.Logger.Error("处理注册post请求失败", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
@@ -103,7 +103,7 @@ func DoSigninHandler(c *gin.Context) {
 	})
 
 	if err != nil {
-		log.Println(err.Error())
+		customLog.Logger.Error("处理登陆post请求失败", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
@@ -165,7 +165,7 @@ func UserInfoHandler(c *gin.Context) {
 	})
 
 	if err != nil {
-		log.Println(err.Error())
+		customLog.Logger.Error("查询用户信息请求失败", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}

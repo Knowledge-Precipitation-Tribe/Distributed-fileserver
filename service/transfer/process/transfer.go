@@ -1,8 +1,10 @@
 package process
 
 import (
+	"Distributed-fileserver/service/transfer/customLog"
 	"bufio"
 	"encoding/json"
+	"go.uber.org/zap"
 	"log"
 	"os"
 
@@ -18,13 +20,13 @@ func Transfer(msg []byte) bool {
 	pubData := mq.TransferData{}
 	err := json.Unmarshal(msg, &pubData)
 	if err != nil {
-		log.Println(err.Error())
+		customLog.Logger.Error("处理文件转移json解析失败", zap.Error(err))
 		return false
 	}
 
 	fin, err := os.Open(pubData.CurLocation)
 	if err != nil {
-		log.Println(err.Error())
+		customLog.Logger.Error("处理文件转移os open失败", zap.Error(err))
 		return false
 	}
 
@@ -32,7 +34,7 @@ func Transfer(msg []byte) bool {
 		pubData.DestLocation,
 		bufio.NewReader(fin))
 	if err != nil {
-		log.Println(err.Error())
+		customLog.Logger.Error("处理文件转移oss.bucket.put失败", zap.Error(err))
 		return false
 	}
 
@@ -40,11 +42,11 @@ func Transfer(msg []byte) bool {
 		pubData.FileHash,
 		pubData.DestLocation)
 	if err != nil {
-		log.Println(err.Error())
+		customLog.Logger.Error("处理文件转移uploadFileLocation失败", zap.Error(err))
 		return false
 	}
 	if !resp.Suc {
-		log.Println("更新数据库异常，请检查:" + pubData.FileHash)
+		customLog.Logger.Error("处理文件转移失败", zap.String("更新数据库异常，请检查:",pubData.FileHash))
 		return false
 	}
 	return true

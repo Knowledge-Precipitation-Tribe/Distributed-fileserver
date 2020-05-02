@@ -1,9 +1,9 @@
 package rpc
 
 import (
-	"context"
 	cfg "Distributed-fileserver/service/upload/config"
-	upProto"Distributed-fileserver/service/upload/proto"
+	upProto "Distributed-fileserver/service/upload/proto"
+	"context"
 )
 
 // Upload : upload结构体

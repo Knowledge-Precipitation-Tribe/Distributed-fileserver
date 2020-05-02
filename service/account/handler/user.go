@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"Distributed-fileserver/service/account/customLog"
 	"context"
 	"fmt"
+	"go.uber.org/zap"
 	"time"
 
 	"Distributed-fileserver/common"
@@ -44,6 +46,7 @@ func (u *User) Signup(ctx context.Context, req *proto.ReqSignup, res *proto.Resp
 		res.Code = common.StatusOK
 		res.Message = "注册成功"
 	} else {
+		customLog.Logger.Error("注册失败", zap.Error(err))
 		res.Code = common.StatusRegisterFailed
 		res.Message = "注册失败"
 	}
@@ -60,6 +63,7 @@ func (u *User) Signin(ctx context.Context, req *proto.ReqSignin, res *proto.Resp
 	// 1. 校验用户名及密码
 	dbResp, err := dbcli.UserSignin(username, encPasswd)
 	if err != nil || !dbResp.Suc {
+		customLog.Logger.Error("校验用户名密码失败", zap.Error(err))
 		res.Code = common.StatusLoginFailed
 		return nil
 	}
@@ -68,6 +72,7 @@ func (u *User) Signin(ctx context.Context, req *proto.ReqSignin, res *proto.Resp
 	token := GenToken(username)
 	upRes, err := dbcli.UpdateToken(username, token)
 	if err != nil || !upRes.Suc {
+		customLog.Logger.Error("生成访问凭证失败", zap.Error(err))
 		res.Code = common.StatusServerError
 		return nil
 	}
@@ -83,6 +88,7 @@ func (u *User) UserInfo(ctx context.Context, req *proto.ReqUserInfo, res *proto.
 	// 查询用户信息
 	dbResp, err := dbcli.GetUserInfo(req.Username)
 	if err != nil {
+		customLog.Logger.Error("查询用户信息失败", zap.Error(err))
 		res.Code = common.StatusServerError
 		res.Message = "服务错误"
 		return nil

@@ -1,7 +1,9 @@
 package api
 
 import (
+	"Distributed-fileserver/service/download/customLog"
 	"fmt"
+	"go.uber.org/zap"
 	"log"
 	"net/http"
 	"strings"
@@ -22,6 +24,7 @@ func DownloadURLHandler(c *gin.Context) {
 	// 从文件表查找记录
 	dbResp, err := dbcli.GetFileMeta(filehash)
 	if err != nil {
+		customLog.Logger.Error(" 从文件表查找记录失败", zap.Error(err))
 		c.JSON(
 			http.StatusOK,
 			gin.H{

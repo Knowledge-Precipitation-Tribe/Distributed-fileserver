@@ -1,12 +1,13 @@
 package main
 
 import (
-	"fmt"
+	"Distributed-fileserver/service/download/customLog"
+	"go.uber.org/zap"
 	"time"
 
-	micro "github.com/micro/go-micro"
-	_ "github.com/micro/go-plugins/registry/kubernetes"
+	"github.com/micro/go-micro"
 	_ "github.com/micro/go-plugins/registry/consul"
+	_ "github.com/micro/go-plugins/registry/kubernetes"
 
 	"Distributed-fileserver/common"
 	dbproxy "Distributed-fileserver/service/dbproxy/client"
@@ -30,7 +31,7 @@ func startRPCService() {
 
 	dlProto.RegisterDownloadServiceHandler(service.Server(), new(dlRpc.Download))
 	if err := service.Run(); err != nil {
-		fmt.Println(err)
+		customLog.Logger.Error(" 从文件表查找记录失败", zap.Error(err))
 	}
 }
 

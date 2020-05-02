@@ -1,9 +1,9 @@
 package mysql
 
 import (
+	"Distributed-fileserver/service/dbproxy/customLog"
 	"database/sql"
-	"fmt"
-	"log"
+	"go.uber.org/zap"
 	"os"
 
 	cfg "Distributed-fileserver/service/dbproxy/config"
@@ -18,7 +18,7 @@ func InitDBConn() {
 	db.SetMaxOpenConns(1000)
 	err := db.Ping()
 	if err != nil {
-		fmt.Println("Failed to connect to mysql, err:" + err.Error())
+		customLog.Logger.Error("InitDbConn请求失败", zap.Error(err))
 		os.Exit(1)
 	}
 }
@@ -55,7 +55,7 @@ func ParseRows(rows *sql.Rows) []map[string]interface{} {
 
 func checkErr(err error) {
 	if err != nil {
-		log.Fatal(err)
+		customLog.Logger.Error("dbproxy checkErr", zap.Error(err))
 		panic(err)
 	}
 }

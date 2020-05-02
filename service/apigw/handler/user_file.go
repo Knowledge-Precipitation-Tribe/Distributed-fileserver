@@ -1,8 +1,9 @@
 package handler
 
 import (
+	"Distributed-fileserver/service/apigw/customLog"
 	"context"
-	"log"
+	"go.uber.org/zap"
 	"net/http"
 	"strconv"
 
@@ -22,7 +23,7 @@ func FileQueryHandler(c *gin.Context) {
 	})
 
 	if err != nil {
-		log.Println(err.Error())
+		customLog.Logger.Error("询批量的文件元信息请求失败", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}
@@ -52,7 +53,7 @@ func FileMetaUpdateHandler(c *gin.Context) {
 	})
 
 	if err != nil {
-		log.Println(err.Error())
+		customLog.Logger.Error("更新元信息接口(重命名)请求失败", zap.Error(err))
 		c.Status(http.StatusInternalServerError)
 		return
 	}

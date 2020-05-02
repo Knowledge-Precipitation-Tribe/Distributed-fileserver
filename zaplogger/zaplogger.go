@@ -22,3 +22,16 @@ func GetLogger() *zap.Logger{
 	}
 	return logger
 }
+
+//输出日志到文件
+func GetLoggerToFile(logfile string) *zap.Logger{
+	cfg := zap.NewProductionConfig()
+	cfg.OutputPaths = []string{
+		logfile,
+	}
+	loggerFile, err := cfg.Build()
+	if err != nil{
+		panic(err)
+	}
+	return loggerFile
+}
