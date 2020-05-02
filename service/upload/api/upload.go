@@ -152,6 +152,7 @@ func DoUploadHandler(c *gin.Context) {
 		customLog.Logger.Error("文件更新用户文件表失败", zap.Error(err))
 		errCode = -6
 	}
+	customLog.Logger.Info("upload finish", zap.Int64("errCode", int64(errCode)))
 }
 
 // TryFastUploadHandler : 尝试秒传接口

@@ -146,7 +146,7 @@ func DoSigninHandler(c *gin.Context) {
 			Location: "/static/view/home.html",
 			Username: username,
 			Token:    rpcResp.Token,
-			// UploadEntry:   upEntryResp.Entry,
+			//UploadEntry:   upEntryResp.Entry,
 			// DownloadEntry: dlEntryResp.Entry,
 			UploadEntry:   cfg.UploadLBHost,
 			DownloadEntry: cfg.DownloadLBHost,

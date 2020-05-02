@@ -3,13 +3,14 @@ package main
 import (
 	"Distributed-fileserver/config"
 	"Distributed-fileserver/mq"
+	"Distributed-fileserver/service/upload/customLog"
 	"fmt"
-	"log"
+	"go.uber.org/zap"
 	"os"
 	"time"
 
 	"github.com/micro/cli"
-	micro "github.com/micro/go-micro"
+	"github.com/micro/go-micro"
 	_ "github.com/micro/go-plugins/registry/consul"
 	_ "github.com/micro/go-plugins/registry/kubernetes"
 
@@ -33,7 +34,7 @@ func startRPCService() {
 			// 检查是否指定mqhost
 			mqhost := c.String("mqhost")
 			if len(mqhost) > 0 {
-				log.Println("custom mq address: " + mqhost)
+				customLog.Logger.Info(fmt.Sprintf("upload main custom mq address: %s" + mqhost))
 				mq.UpdateRabbitHost(mqhost)
 			}
 		}),
@@ -46,13 +47,16 @@ func startRPCService() {
 
 	upProto.RegisterUploadServiceHandler(service.Server(), new(upRpc.Upload))
 	if err := service.Run(); err != nil {
-		fmt.Println(err)
+		customLog.Logger.Error("upload main service run error", zap.Error(err))
 	}
 }
 
 func startAPIService() {
 	router := route.Router()
-	router.Run(cfg.UploadServiceHost)
+	err := router.Run(cfg.UploadServiceHost)
+	if err != nil{
+		customLog.Logger.Error("upload main startAPIService error", zap.Error(err))
+	}
 	// service := web.NewService(
 	// 	web.Name("go.micro.web.upload"),
 	// 	web.Handler(router),
@@ -69,8 +73,14 @@ func startAPIService() {
 }
 
 func main() {
-	os.MkdirAll(config.TempLocalRootDir, 0777)
-	os.MkdirAll(config.TempPartRootDir, 0777)
+	err := os.MkdirAll(config.TempLocalRootDir, 0777)
+	if err != nil{
+		customLog.Logger.Error("upload main mkdir error", zap.Error(err))
+	}
+	err = os.MkdirAll(config.TempPartRootDir, 0777)
+	if err != nil{
+		customLog.Logger.Error("upload main mkdir error", zap.Error(err))
+	}
 
 	// api 服务
 	go startAPIService()
