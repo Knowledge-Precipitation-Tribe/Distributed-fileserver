@@ -45,8 +45,11 @@ func startRPCService() {
 	// 初始化mq client
 	mq.Init()
 
-	upProto.RegisterUploadServiceHandler(service.Server(), new(upRpc.Upload))
-	if err := service.Run(); err != nil {
+	err := upProto.RegisterUploadServiceHandler(service.Server(), new(upRpc.Upload))
+	if err != nil{
+		customLog.Logger.Error("upload main RegisterUploadServiceHandler error", zap.Error(err))
+	}
+	if err = service.Run(); err != nil {
 		customLog.Logger.Error("upload main service run error", zap.Error(err))
 	}
 }
